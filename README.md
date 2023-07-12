@@ -4,6 +4,7 @@
 2. Français
 
 ----------  English ----------
+
 Hello everyone !
 
 This is my very first plugin for RPG Maker MV.
@@ -67,6 +68,7 @@ use the DungeonTint plugin command.
 
 
 ---------- Français ----------
+
 Bonjour à toutes et à tous !
 
 Voici mon tout premier plugin pour RPG Maker MV.
