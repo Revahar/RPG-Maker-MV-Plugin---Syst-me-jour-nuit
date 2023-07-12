@@ -115,4 +115,3 @@ Pour définir la teinte des donjons/grottes et autres lieux sans lumière (valeu
 utilisez la commande de plugin DungeonTint. 
 /!\ À mettre dans un évènement parallèle.
 
-test github
