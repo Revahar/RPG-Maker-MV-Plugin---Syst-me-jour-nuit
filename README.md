@@ -114,3 +114,5 @@ désactivée, utilisez la commande de plugin EnableTintOnExit.
 Pour définir la teinte des donjons/grottes et autres lieux sans lumière (valeur de la teinte modifiable à la ligne 239) 
 utilisez la commande de plugin DungeonTint. 
 /!\ À mettre dans un évènement parallèle.
+
+test github
