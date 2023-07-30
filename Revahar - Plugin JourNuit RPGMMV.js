@@ -2,7 +2,7 @@
 // Revahar - Plugin JourNuit RPGMMV
 //=============================================================================
 /*:
- * @plugindesc Plugin de système jour/nuit pour RPG Maker MV. test de fonctionnement
+ * @plugindesc Plugin de système jour/nuit pour RPG Maker MV. 
  * Version 1.1
  * @author Revahar
  *
@@ -85,6 +85,10 @@
  * @param TeinteNuit
  * @desc La teinte souhaitée pour la nuit (format: [R, G, B, Gray])
  * @default [-200, -200, -100, 68]
+ * 
+ * @param TeinteDefaut
+ * @desc La teinte souhaitée par défaut (format: [R, G, B, Gray])
+ * @default [0, 0, 0, 0]
  *
  * @help Ce plugin permet d'ajouter un système jour/nuit au jeu.
  * Une journée est divisée en 4 phases.
@@ -152,37 +156,37 @@
     var targetTint = null;
     var frameCount = 0;
 
-    // Turn off tints
+    // Désactiver les teintes
     function disableTint() {
         tintEnabled = false;
         updateTint();
     }
 
-    // Reactivate tints
+    // Réactiver les teintes
     function enableTint() {
         transitionFrames = parseInt(parameters['Transition Frames']);
         tintEnabled = true;
         updateTint();
     }
 
-    // Reactivate colors when exiting buildings/dungeons
+    // Réactiver les teintes lors de la sortie d'un donjon
     function enableTintOnExit() {
         tintOnExit = true;
         updateTint();
     }
 
-    // Set tint for dungeons/caves
+    // Appliquer une teinte intérieure
     function dungeonTint() {
         dungeonTintValue = true;
         updateTint();
     }
 
-    // Add hours
+    // Ajouter des heures
     function addHours(hours) {
-        var currentTime = $gameVariables.value(1); // Variable contenant l'heure
+        var currentTime = $gameVariables.value(1); 
         var newTime = currentTime + hours;
 
-        // Manage passing midnight
+        // Calcul lorsque l'heure passe 24h
         if (newTime >= 24) {
             newTime -= 24;
         } else if (newTime < 0) {
@@ -193,15 +197,15 @@
         updateTint();
     }
 
-    // Update tint
+    // Mettre à jour les teintes
     function updateTint() {
-        var currentTime = $gameVariables.value(1); // Variable containing the time
-        var periodeMatin = $gameSwitches.value(switchMatin); // Switch determining the morning period (OFF = not morning, ON = morning)
-        var periodeJournee = $gameSwitches.value(switchJournee); // Switch determining the day period (OFF = no day, ON = day)
-        var periodeSoir = $gameSwitches.value(switchSoir); // Switch determining the evening period (OFF = no evening, ON = evening)
-        var periodeNuit = $gameSwitches.value(switchNuit); // Switch determining the night period (OFF = no night, ON = night)
+        var currentTime = $gameVariables.value(1); // Variable contenant l'heure
+        var periodeMatin = $gameSwitches.value(switchMatin); // Interrupteur déterminant la période du matin (OFF = pas du matin, ON = matin)
+        var periodeJournee = $gameSwitches.value(switchJournee); // Commutateur déterminant la période de jour (OFF = pas de jour, ON = jour)
+        var periodeSoir = $gameSwitches.value(switchSoir); // Commutateur déterminant la période du soir (OFF = pas de soir, ON = soir)
+        var periodeNuit = $gameSwitches.value(switchNuit); // Commutateur déterminant la période de nuit (OFF = pas de nuit, ON = nuit)
 
-        // Determine current phase based on time
+        // Déterminer la phase actuelle en fonction du temps
         var phase = 'matin';
         if (currentTime >= matinHeure && currentTime < journeeHeure) {
             phase = 'matin';
@@ -234,10 +238,10 @@
         $gameSwitches.setValue(varSoir, periodeSoir);
         $gameSwitches.setValue(varNuit, periodeNuit);
 
-        // Obtain the tint corresponding to the phase
+        // Obtenir la teinte correspondant à la phase
         var targetTint = getTintByPhase(phase);
 
-        // Change tint when exiting building/dungeon
+        // Changer de teinte en quittant le bâtiment/donjon
         if (tintOnExit) {
             currentTint = targetTint;
             transitionFrames = frameOnExit;
@@ -246,7 +250,7 @@
             return;
         }
 
-        // Set the tint of dungeons/caves/etc.
+        // Définissez la teinte des donjons/grottes/etc.
         if (dungeonTintValue) {
             currentTint = JSON.parse(parameters['TeinteDongeon']);
             $gameScreen.startTint(currentTint, 0);
@@ -254,14 +258,14 @@
             return;
         }
 
-        // Disable tint if tintEnabled is false
+        // Désactiver la teinte si tintEnabled est faux
         if (!tintEnabled) {
-            currentTint = [0, 0, 0, 0];
+            currentTint = JSON.parse(parameters['TeinteDefaut']);
             $gameScreen.startTint(currentTint, 0);
             return;
         }
 
-        // Gradually update the tint
+        // Mettre à jour progressivement la teinte
         if (currentTint === null) {
             currentTint = targetTint;
             $gameScreen.startTint(currentTint, transitionFrames);
@@ -271,7 +275,7 @@
         }
     }
 
-    // Check if two shades are the same
+    // Vérifiez si deux nuances sont identiques
     function tintEquals(tint1, tint2) {
         return (
             tint1[0] === tint2[0] &&
@@ -281,7 +285,7 @@
         );
     }
 
-    // Get tint based on phase
+    // Obtenez une teinte basée sur la phase
     function getTintByPhase(phase) {
         switch (phase) {
             case 'matin':
@@ -293,24 +297,24 @@
             case 'nuit':
                 return JSON.parse(parameters['TeinteNuit']);
             default:
-                return [0, 0, 0, 0];
+                return JSON.parse(parameters['TeinteDefaut']);
         }
     }
 
-    // Update tint every frame
+    // Mettre à jour la teinte à chaque frame
     var _Scene_Map_update = Scene_Map.prototype.update;
     Scene_Map.prototype.update = function() {
         _Scene_Map_update.call(this);
 
         frameCount++;
         if (frameCount % heureFrames === 0) {
-            var currentTime = $gameVariables.value(1); // Variable containing hours
-            var currentMinutes = $gameVariables.value(2); // Variable containing the minutes
-            var currentSeconds = $gameVariables.value(3); // Variable containing the seconds
+            var currentTime = $gameVariables.value(1); // Variable contenant les heures
+            var currentMinutes = $gameVariables.value(2); // Variable contenant les minutes
+            var currentSeconds = $gameVariables.value(3); // Variable contenant les secondes
 
             currentSeconds += 1;
 
-            // Manage overruns of seconds and minutes
+            // Gérer les dépassements de secondes et de minutes
             if (currentSeconds >= 60) {
                 currentSeconds = 0;
                 currentMinutes ++;
@@ -332,7 +336,7 @@
         }
     };
 
-    // Plugin command Management
+    // Gestion des commandes du plugin
     var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
     Game_Interpreter.prototype.pluginCommand = function(command, args) {
         _Game_Interpreter_pluginCommand.call(this, command, args);
